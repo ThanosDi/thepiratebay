@@ -9,7 +9,8 @@ import {
   parseTorrentPage,
   parseCommentsPage,
   parseTvShow,
-  parseCategories
+  parseCategories,
+  getProxyList
 } from './Parser';
 
 
@@ -24,7 +25,8 @@ const searchDefaults = {
     verified: false
   },
   orderBy: 'seeds',
-  sortBy: 'desc'
+  sortBy: 'desc',
+  proxyList: ['https://thepiratebay.org', 'https://thepiratebay.se', 'https://pirateproxy.one', 'https://ahoy.one']
 };
 
 export const primaryCategoryNumbers = {
@@ -158,7 +160,7 @@ export function search(title: string = '*', opts: Object = {}) {
     orderby: orderingNumber
   })}`;
 
-  return parsePage(url, parseResults, rest.filter);
+  return parsePage(url, parseResults, rest.filter, null, null, opts.proxyList || searchDefaults.proxyList);
 }
 
 export function getTorrent(id: string | number | { link: string }) {
@@ -229,6 +231,10 @@ export function getCategories() {
   return parsePage(`${baseUrl}/recent`, parseCategories);
 }
 
+export function proxyList() {
+  return getProxyList();
+}
+
 export default {
   search,
   getTorrent,
@@ -237,5 +243,6 @@ export default {
   recentTorrents,
   userTorrents,
   getTvShow,
-  getCategories
+  getCategories,
+  proxyList
 };

@@ -10,7 +10,7 @@ import { baseUrl } from './PirateBay';
 
 /* eslint promise/no-promise-in-callback: 0, max-len: [2, 200] */
 
-const maxConcurrentRequests = 3;
+const maxConcurrentRequests = 10;
 
 type resultType = {
   id: string,
@@ -45,32 +45,74 @@ export function isTorrentVerified(element: Object): bool {
 }
 
 export async function getProxyList(): Promise<Array<string>> {
-  const response = await fetch('https://proxybay.tv/').then(res => res.text());
+	
+  var result = []
+  var noDups = []
+
+  const jsonStrResp = await fetch('https://thepiratebay-proxylist.org/api/v1/proxies').then(res => res.text());
+
+  var jsonResp = false
+  if (jsonStrResp)
+	  try {
+		  jsonResp = JSON.parse(jsonStrResp)
+	  } catch(e) {}
+
+  if (jsonResp && jsonResp.proxies && jsonResp.proxies.length) {
+      result = result.concat(jsonResp.proxies)
+	  jsonResp.proxies.forEach((el) => { noDups.push(el.domain) })
+  }
+
+  const response = await fetch('https://proxybay.one/').then(res => res.text());
   const $ = cheerio.load(response);
 
-  const links = $('[rel="nofollow"]')
-    .map(function getElementLinks() {
-      return $(this).attr('href');
-    })
-    .get()
-    .filter((res, index) => (index < maxConcurrentRequests));
+  var newLinks = []
 
-  return links;
+  const links = $(".speed").each(function() {
+	if (parseFloat($(this).text())) {
+		const pUrl = $(this).parents('tr').find('.site a').attr('href')
+		var newLink = {
+			domain: pUrl.replace(/https?:\/\//i,''),
+			country: $(this).parents('tr').find('.country img').attr('title').toUpperCase(),
+			secure: !!pUrl.startsWith('https://'),
+			speed: parseFloat($(this).text())
+		}
+		if (noDups.indexOf(newLink.domain) == -1) {
+			noDups.push(newLink.domain)
+			newLinks.push(newLink)
+		}
+	}
+  })
+  
+  if (newLinks && newLinks.length)
+  	result = result.concat(newLinks)
+
+  if (result && result.length) {
+	function compare(a,b) {
+	  if (a.speed < b.speed) return -1
+	  if (a.speed > b.speed) return 1
+	  return 0
+	}
+	
+	result.sort(compare);
+  }
+
+  return result;
 }
 
 type parseResultType = Array<resultType> | resultType;
 type parseCallbackType = (resultsHTML: string, filter: Object) => parseResultType;
 
-export function parsePage(url: string, parseCallback: parseCallbackType, filter: Object = {}, method: string = 'GET', formData: Object = {}): Promise<parseResultType> {
+export function parsePage(url: string, parseCallback: parseCallbackType, filter: Object = {}, method: string = 'GET', formData: Object = {}, proxyUrls): Promise<parseResultType> {
   const attempt = async error => {
     if (error) console.log(error);
 
-    const proxyUrls = [
-      'https://thepiratebay.org',
-      'https://thepiratebay.se',
-      'https://pirateproxy.one',
-      'https://ahoy.one'
-    ];
+    if (!proxyUrls || !proxyUrls.length)
+		proxyUrls = [
+		  'https://thepiratebay.org',
+		  'https://thepiratebay.se',
+		  'https://pirateproxy.one',
+		  'https://ahoy.one'
+		];
 
     const options = {
       mode: 'no-cors',
@@ -79,10 +121,10 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
     };
 
     const requests = proxyUrls
-      .map(_url => (new UrlParse(url)).set('hostname', new UrlParse(_url).hostname).href)
+      .map(_url => { return { domain: _url, href: (new UrlParse(url)).set('hostname', new UrlParse(_url).hostname).href } })
       .map(_url =>
         // $FlowFixMe - To avoid unnessary object type conversion, https://github.com/facebook/flow/issues/1606
-        fetch(_url, options)
+        fetch(_url.href, options)
           .then(response => response.text())
           .then(body => (
             body.includes('502: Bad gateway') ||
@@ -90,13 +132,13 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
             body.includes('Database maintenance') ||
             body.includes('Origin DNS error')
               ? Promise.reject('Database maintenance, Cloudflare DNS error, 403 or 502 error')
-              : Promise.resolve(body)
+              : Promise.resolve({from: _url.domain, body: body})
         )
       ));
 
     const abandonFailedResponses = index => {
       const p = requests.splice(index, 1)[0];
-      p.catch();
+      p.catch(() => {});
     };
 
     const race = () => {
@@ -119,7 +161,11 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
     .then(response => parseCallback(response, filter));
 }
 
-export function parseResults(resultsHTML: string, filter: Object = {}): Array<resultType> {
+export function parseResults(resultsObj: Object = {}, filter: Object = {}): Array<resultType> {
+	if (resultsObj.body) {
+		var resultsHTML = resultsObj.body
+		var resultsFrom = resultsObj.from
+	}
   const $ = cheerio.load(resultsHTML);
   const rawResults = $('table#searchResult tr:has(a.detLink)');
 
@@ -179,8 +225,8 @@ export function parseResults(resultsHTML: string, filter: Object = {}): Array<re
       .filter(result => !result.uploaderLink.includes('undefined'));
 
   return filter.verified === true
-     ? parsedResultsArray.filter(result => result.verified === true)
-     : parsedResultsArray;
+     ? { from: resultsFrom, results: parsedResultsArray.filter(result => result.verified === true) }
+     : { from: resultsFrom, results: parsedResultsArray };
 }
 
 type parseTvShowType = {
