@@ -108,11 +108,14 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
 
     if (!proxyUrls || !proxyUrls.length)
 		proxyUrls = [
-		  'https://thepiratebay.org',
-		  'https://thepiratebay.se',
-		  'https://pirateproxy.one',
-		  'https://ahoy.one'
-		];
+      'https://thepiratebay.org',
+      'https://pirateproxy.sh',
+      'https://thepbay.ga',
+      'https://thepiratebay.freeproxy.fun'
+    ];
+
+    if (url.includes('/top/'))
+      proxyUrls.splice(0, 1);
 
     const options = {
       mode: 'no-cors',
@@ -178,7 +181,12 @@ export function parseResults(resultsObj: Object = {}, filter: Object = {}): Arra
     const leechers: string = $(this).find('td[align="right"]').next().text();
     const relativeLink: string = $(this).find('div.detName a').attr('href');
     const link: string = baseUrl + relativeLink;
-    const id: string = String(parseInt(/^\/torrent\/(\d+)/.exec(relativeLink)[1], 10));
+    var partId = /^\/torrent\/(\d+)/.exec(relativeLink)
+    var id = false
+    if (partId) {
+      id = String(parseInt(partId[1], 10));
+    }
+//    const id: string = String(parseInt(/^\/torrent\/(\d+)/.exec(relativeLink)[1], 10));
     const magnetLink: string = $(this).find('a[title="Download this torrent using magnet"]').attr('href');
     const uploader: string = $(this).find('font .detDesc').text();
     const uploaderLink: string = baseUrl + $(this).find('font a').attr('href');

@@ -26,8 +26,10 @@ const searchDefaults = {
   },
   orderBy: 'seeds',
   sortBy: 'desc',
-  proxyList: ['https://thepiratebay.org', 'https://thepiratebay.se', 'https://pirateproxy.one', 'https://ahoy.one']
+  proxyList: ['https://thepiratebay.org', 'https://pirateproxy.sh', 'https://thepbay.ga', 'https://thepiratebay.freeproxy.fun']
 };
+
+// not working anymore: 'https://thepiratebay.se', 'https://ahoy.one'
 
 export const primaryCategoryNumbers = {
   audio: 100,
