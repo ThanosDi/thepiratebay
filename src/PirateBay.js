@@ -26,8 +26,10 @@ const searchDefaults = {
   },
   orderBy: 'seeds',
   sortBy: 'desc',
-  proxyList: ['https://thepiratebay.org', 'https://pirateproxy.sh', 'https://thepbay.ga', 'https://thepiratebay.freeproxy.fun']
+  proxyList: ['https://thepiratebay.org', 'https://pirateproxy.sh', 'https://thepiratebay.freeproxy.fun']
 };
+
+//  ^ 'https://thepbay.ga' also works, but sometimes has no results
 
 // not working anymore: 'https://thepiratebay.se', 'https://ahoy.one'
 

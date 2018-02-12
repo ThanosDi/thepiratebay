@@ -110,9 +110,10 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
 		proxyUrls = [
       'https://thepiratebay.org',
       'https://pirateproxy.sh',
-      'https://thepbay.ga',
       'https://thepiratebay.freeproxy.fun'
     ];
+
+    //  ^ 'https://thepbay.ga' also works, but sometimes has no results
 
     if (url.includes('/top/'))
       proxyUrls.splice(0, 1);
