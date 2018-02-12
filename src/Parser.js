@@ -134,7 +134,8 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
             body.includes('502: Bad gateway') ||
             body.includes('403 Forbidden') ||
             body.includes('Database maintenance') ||
-            body.includes('Origin DNS error')
+            body.includes('Origin DNS error') ||
+            !body.includes('<title>The Pirate Bay')
               ? Promise.reject('Database maintenance, Cloudflare DNS error, 403 or 502 error')
               : Promise.resolve({from: _url.domain, body: body})
         )
