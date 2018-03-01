@@ -3,7 +3,7 @@
  * @flow
  */
 import cheerio from 'cheerio';
-import fetch from 'isomorphic-fetch';
+import fetch from 'node-fetch';
 import UrlParse from 'url-parse';
 import { baseUrl } from './PirateBay';
 
@@ -121,7 +121,8 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
     const options = {
       mode: 'no-cors',
       method,
-      body: formData
+      body: formData,
+      timeout: 15000
     };
 
     const requests = proxyUrls

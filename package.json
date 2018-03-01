@@ -57,7 +57,7 @@
     "babel-runtime": "^6.23.0",
     "cheerio": "^0.22.0",
     "form-data": "^2.1.4",
-    "isomorphic-fetch": "^2.2.1",
+    "node-fetch": "^2.0.0",
     "url-parse": "^1.1.9"
   },
   "files": [
