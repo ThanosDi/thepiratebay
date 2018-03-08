@@ -115,13 +115,13 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
 
     //  ^ 'https://thepbay.ga' also works, but sometimes has no results
 
-    if (url.includes('/top/'))
-      proxyUrls.splice(0, 1);
+//    if (url.includes('/top/'))
+//      proxyUrls.splice(0, 1);
 
     const options = {
       mode: 'no-cors',
       method,
-      body: formData,
+//      body: formData,
       timeout: 15000
     };
 
