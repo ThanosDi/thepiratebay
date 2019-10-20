@@ -107,11 +107,7 @@ export function parsePage(url: string, parseCallback: parseCallbackType, filter:
     if (error) console.log(error);
 
     if (!proxyUrls || !proxyUrls.length)
-		proxyUrls = [
-      'https://thepiratebay.org',
-      'https://pirateproxy.sh',
-      'https://thepiratebay.freeproxy.fun'
-    ];
+		proxyUrls = ['https://piratebays.red', 'https://baypirate.org', 'https://tpb.lc'];
 
     //  ^ 'https://thepbay.ga' also works, but sometimes has no results
 

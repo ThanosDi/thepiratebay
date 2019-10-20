@@ -14,8 +14,7 @@ import {
 } from './Parser';
 
 
-export const baseUrl = process.env.THEPIRATEBAY_DEFAULT_ENDPOINT || 'https://thepiratebay.org';
-const proxyList = process.env.THEPIRATEBAY_PROXY_LIST || ['https://thepiratebay.org'];
+export const baseUrl = process.env.THEPIRATEBAY_DEFAULT_ENDPOINT || 'https://thepiratebay.sh';
 
 export const defaultOrder = { orderBy: 'seeds', sortBy: 'desc' };
 
@@ -27,7 +26,7 @@ const searchDefaults = {
   },
   orderBy: 'seeds',
   sortBy: 'desc',
-  proxyList
+  proxyList: ['https://piratebays.red', 'https://baypirate.org', 'https://tpb.lc']
 };
 
 //  ^ 'https://thepbay.ga' also works, but sometimes has no results
@@ -236,7 +235,7 @@ export function getCategories() {
   return parsePage(`${baseUrl}/recent`, parseCategories);
 }
 
-export function fnproxyList() {
+export function proxyList() {
   return getProxyList();
 }
 
@@ -249,5 +248,5 @@ export default {
   userTorrents,
   getTvShow,
   getCategories,
-  fnproxyList
+  proxyList
 };
