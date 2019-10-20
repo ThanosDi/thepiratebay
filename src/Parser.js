@@ -45,7 +45,7 @@ export function isTorrentVerified(element: Object): bool {
 }
 
 export async function getProxyList(): Promise<Array<string>> {
-	
+
   var result = []
   var noDups = []
 
@@ -82,7 +82,7 @@ export async function getProxyList(): Promise<Array<string>> {
 		}
 	}
   })
-  
+
   if (newLinks && newLinks.length)
   	result = result.concat(newLinks)
 
@@ -92,7 +92,7 @@ export async function getProxyList(): Promise<Array<string>> {
 	  if (a.speed > b.speed) return 1
 	  return 0
 	}
-	
+
 	result.sort(compare);
   }
 
@@ -173,7 +173,7 @@ export function parseResults(resultsObj: Object = {}, filter: Object = {}): Arra
 		var resultsFrom = resultsObj.from
 	}
   const $ = cheerio.load(resultsHTML);
-  const rawResults = $('table#searchResult tr:has(a.detLink)');
+  const rawResults = $('#SearchResults table#searchResult tr:has(a.detLink)');
 
   const results = rawResults.map(function getRawResults() {
     const name: string = $(this).find('a.detLink').text();
@@ -190,40 +190,40 @@ export function parseResults(resultsObj: Object = {}, filter: Object = {}): Arra
       id = String(parseInt(partId[1], 10));
     }
 //    const id: string = String(parseInt(/^\/torrent\/(\d+)/.exec(relativeLink)[1], 10));
-    const magnetLink: string = $(this).find('a[title="Download this torrent using magnet"]').attr('href');
+    const magnetLink: string = $(this).find('a[title="PirateBay Proxy :Download this torrent using magnet"]').attr('href');
     const uploader: string = $(this).find('font .detDesc').text();
     const uploaderLink: string = baseUrl + $(this).find('font a').attr('href');
     const verified: bool = isTorrentVerified($(this));
 
-    const category = {
-      id: $(this)
-            .find('center a')
-            .first()
-            .attr('href')
-            .match(/\/browse\/(\d+)/)[1],
-      name: $(this).find('center a').first().text()
-    };
-
-    const subcategory = {
-      id: $(this)
-            .find('center a')
-            .last()
-            .attr('href')
-            .match(/\/browse\/(\d+)/)[1],
-      name: $(this).find('center a').last().text()
-    };
+    // const category = {
+    //   id: $(this)
+    //         .find('center a')
+    //         .first()
+    //         .attr('href')
+    //         .match(/\/browse\/(\d+)/)[1],
+    //   name: $(this).find('center a').first().text()
+    // };
+	//
+    // const subcategory = {
+    //   id: $(this)
+    //         .find('center a')
+    //         .last()
+    //         .attr('href')
+    //         .match(/\/browse\/(\d+)/)[1],
+    //   name: $(this).find('center a').last().text()
+    // };
 
     return {
       id,
       name,
       size,
       link,
-      category,
+      // category,
       seeders,
       leechers,
       uploadDate,
       magnetLink,
-      subcategory,
+      // subcategory,
       uploader,
       verified,
       uploaderLink
